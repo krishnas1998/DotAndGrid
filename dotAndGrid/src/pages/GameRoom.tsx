@@ -4,26 +4,22 @@ import { useSocket } from '../context/SocketContext';
 import type { GameState, Edge } from '../types';
 import { Grid } from '../components/Grid';
 import { ScoreBoard } from '../components/ScoreBoard';
+import { InstructionsModal } from '../components/InstructionsModal';
 
 export const GameRoom: React.FC = () => {
     const { roomId } = useParams();
     const { socket } = useSocket();
     const navigate = useNavigate();
     const [gameState, setGameState] = useState<GameState | null>(null);
+    const [showInstructions, setShowInstructions] = useState(false);
 
     useEffect(() => {
         if (!socket || !roomId) return;
 
-        // Listen for updates
         socket.on('game_update', (newState: GameState) => {
             setGameState(newState);
         });
 
-        // Initial join if coming directly via URL
-        // In a real app, might want better check if already joined
-        // For MVP, we'll emit join again or rely on the fact that landing page handled it if navigated from there
-        // Note: If user refreshes, they might need to rejoin logic in App or here.
-        // Let's attempt to fetch state or join if socket just connected
         socket.emit('join_room', { roomId }, (response: { success: boolean, gameState: GameState, error?: string }) => {
             if (response.success) {
                 setGameState(response.gameState);
@@ -43,19 +39,67 @@ export const GameRoom: React.FC = () => {
         socket.emit('make_move', { roomId, edge });
     };
 
-    if (!gameState) return <div>Loading game...</div>;
+    const handleShare = async () => {
+        const url = window.location.href;
+        const shareData = {
+            title: 'Dots and Boxes',
+            text: `Join my game! Room ID: ${roomId}`,
+            url: url
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.log('Share canceled or failed', err);
+            }
+        } else {
+            // Fallback
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Room Link copied to clipboard!');
+            }).catch(() => {
+                alert(`Room ID: ${roomId}`);
+            });
+        }
+    };
+
+    if (!gameState) return <div style={{ padding: '20px' }}>Loading game...</div>;
 
     const myId = socket?.id || '';
 
     return (
-        <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', background: '#eee' }}>
-                <div>Room: <strong>{roomId}</strong></div>
-                <button onClick={() => { navigate('/'); }} style={{ cursor: 'pointer' }}>Leave Room</button>
+        <div style={{ paddingBottom: '20px' }}>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '10px 20px',
+                backgroundColor: 'var(--header-bg)',
+                borderBottom: '1px solid var(--border-color)'
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    <div style={{ fontSize: '1.2rem' }}>Room: <strong>{roomId}</strong></div>
+                    <button
+                        onClick={handleShare}
+                        style={{ padding: '5px 10px', fontSize: '0.9rem' }}
+                        title="Share Room Link"
+                    >
+                        Share Room 🔗
+                    </button>
+                    <button
+                        onClick={() => setShowInstructions(true)}
+                        style={{ padding: '5px 10px', fontSize: '0.9rem', backgroundColor: 'transparent', border: '1px solid var(--border-color)' }}
+                    >
+                        How to Play
+                    </button>
+                </div>
+                <button onClick={() => { navigate('/'); }} style={{ cursor: 'pointer', fontSize: '0.9rem' }}>Leave</button>
             </div>
 
             <ScoreBoard gameState={gameState} myId={myId} />
             <Grid gameState={gameState} playerId={myId} onEdgeClick={handleEdgeClick} />
+
+            {showInstructions && <InstructionsModal onClose={() => setShowInstructions(false)} />}
         </div>
     );
 };
