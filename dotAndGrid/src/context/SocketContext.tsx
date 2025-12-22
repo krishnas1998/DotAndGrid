@@ -16,7 +16,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     useEffect(() => {
         // Connect to backend
-        const newSocket = io('http://localhost:3001'); // Hardcoded local for now, env var later
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+        const newSocket = io(API_URL);
 
         newSocket.on('connect', () => {
             console.log('Connected to socket server');
