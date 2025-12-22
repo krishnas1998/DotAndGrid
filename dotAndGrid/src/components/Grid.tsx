@@ -46,6 +46,7 @@ export const Grid: React.FC<GridProps> = ({ gameState, playerId, onEdgeClick }) 
                         .edge-taken { fill: var(--grid-edge-taken); }
                         .edge-free { fill: transparent; transition: fill 0.2s; }
                         .edge-free:hover { fill: var(--grid-edge-hover); cursor: pointer; }
+                        .edge-disabled { fill: transparent; }
                         .box-p1 { fill: var(--box-p1); }
                         .box-p2 { fill: var(--box-p2); }
                         .text-initials { fill: var(--text-color); font-weight: bold; font-size: 14px; }
@@ -100,7 +101,7 @@ export const Grid: React.FC<GridProps> = ({ gameState, playerId, onEdgeClick }) 
                                 y={padding + y * dotSpacing - 5}
                                 width={dotSpacing - dotRadius * 2}
                                 height={10}
-                                className={taken ? 'edge-taken' : (interactable ? 'edge-free' : '')}
+                                className={taken ? 'edge-taken' : (interactable ? 'edge-free' : 'edge-disabled')}
                                 onClick={() => handleEdgeClick(x, y, x + 1, y)}
                             />
                         );
@@ -119,7 +120,7 @@ export const Grid: React.FC<GridProps> = ({ gameState, playerId, onEdgeClick }) 
                                 y={padding + y * dotSpacing + dotRadius}
                                 width={10}
                                 height={dotSpacing - dotRadius * 2}
-                                className={taken ? 'edge-taken' : (interactable ? 'edge-free' : '')}
+                                className={taken ? 'edge-taken' : (interactable ? 'edge-free' : 'edge-disabled')}
                                 onClick={() => handleEdgeClick(x, y, x, y + 1)}
                             />
                         );
