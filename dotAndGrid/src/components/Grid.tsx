@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { } from 'react';
 import type { GameState, Edge } from '../types';
 
 interface GridProps {
@@ -16,8 +16,6 @@ export const Grid: React.FC<GridProps> = ({ gameState, playerId, onEdgeClick }) 
     const width = (gridSize - 1) * dotSpacing + padding * 2;
     const height = (gridSize - 1) * dotSpacing + padding * 2;
 
-    // Get colors from CSS variables
-    const getCssVar = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
     // We use state to track colors if they change (e.g. theme switch), 
     // but for simplicity in SVG we often rely on CSS classes or currentcolor where possible.
