@@ -10,6 +10,7 @@ export class Game {
     public currentTurnIndex: number = 0;
     public status: 'waiting' | 'playing' | 'finished' = 'waiting';
     public winner: PlayerId | null = null;
+    public lastMove: string | null = null;
 
     constructor(id: string, gridSize: number) {
         this.id = id;
@@ -40,7 +41,6 @@ export class Game {
         this.players = this.players.filter(p => p.id !== playerId);
         if (this.status === 'playing') {
             this.status = 'finished'; // Opponent wins by default or game aborts
-            // Simple handling: if playing and someone leaves, game over
         } else {
             this.status = 'waiting';
         }
@@ -50,8 +50,7 @@ export class Game {
         if (this.status !== 'playing') return { valid: false, error: 'Game not active' };
         if (this.players[this.currentTurnIndex].id !== playerId) return { valid: false, error: 'Not your turn' };
 
-        // Normalize edge (smaller coordinates first to ensure consistency)
-        // Ensure x1,y1 is top-left/smaller than x2,y2
+        // Normalize edge
         let { x1, y1, x2, y2 } = edge;
         if (x1 > x2 || (x1 === x2 && y1 > y2)) {
             [x1, x2] = [x2, x1];
@@ -68,6 +67,7 @@ export class Game {
 
         // Add edge
         this.edges.add(edgeKey);
+        this.lastMove = edgeKey;
 
         // Check for completed boxes
         const completedBoxes = this.checkCompletedBoxes(edge, playerId);
@@ -97,27 +97,20 @@ export class Game {
             [y1, y2] = [y2, y1];
         }
 
-        // Horizontal edge (x, y) -> (x+1, y)
-        if (y1 === y2) {
-            // Check box above: (x, y-1) top-left
+        if (y1 === y2) { // Horizontal
             if (this.isBoxComplete(x1, y1 - 1)) {
                 this.boxes[`${x1},${y1 - 1}`] = playerId;
                 count++;
             }
-            // Check box below: (x, y) top-left
             if (this.isBoxComplete(x1, y1)) {
                 this.boxes[`${x1},${y1}`] = playerId;
                 count++;
             }
-        }
-        // Vertical edge (x, y) -> (x, y+1)
-        else {
-            // Check box left: (x-1, y) top-left
+        } else { // Vertical
             if (this.isBoxComplete(x1 - 1, y1)) {
                 this.boxes[`${x1 - 1},${y1}`] = playerId;
                 count++;
             }
-            // Check box right: (x, y) top-left
             if (this.isBoxComplete(x1, y1)) {
                 this.boxes[`${x1},${y1}`] = playerId;
                 count++;
@@ -126,15 +119,7 @@ export class Game {
         return count;
     }
 
-    // Check if box at top-left (x,y) is complete
-    // Box consists of edges:
-    // Top: (x,y)-(x+1,y)
-    // Bottom: (x,y+1)-(x+1,y+1)
-    // Left: (x,y)-(x,y+1)
-    // Right: (x+1,y)-(x+1,y+1)
     private isBoxComplete(x: number, y: number): boolean {
-        // Boundary check (assuming 0-indexed dots)
-        // Grid size N dots means N-1 boxes width/height
         if (x < 0 || y < 0 || x >= this.gridSize - 1 || y >= this.gridSize - 1) return false;
 
         const top = `${x},${y}-${x + 1},${y}`;
@@ -149,8 +134,6 @@ export class Game {
     }
 
     private checkWinCondition() {
-        // Total possible edges or boxes?
-        // Easier: Total boxes = (gridSize-1)^2
         const totalBoxes = (this.gridSize - 1) * (this.gridSize - 1);
         const claimedBoxes = Object.keys(this.boxes).length;
 
@@ -177,7 +160,8 @@ export class Game {
             scores: this.scores,
             currentTurn: this.players[this.currentTurnIndex]?.id,
             winner: this.winner,
-            status: this.status
+            status: this.status,
+            lastMove: this.lastMove
         };
     }
 }

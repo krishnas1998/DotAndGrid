@@ -45,6 +45,8 @@ export const Grid: React.FC<GridProps> = ({ gameState, playerId, onEdgeClick }) 
                         .edge-free { fill: transparent; transition: fill 0.2s; }
                         .edge-free:hover { fill: var(--grid-edge-hover); cursor: pointer; }
                         .edge-disabled { fill: transparent; }
+                        .edge-last-move { fill: var(--last-move-color) !important; filter: drop-shadow(0 0 2px var(--last-move-color)); }
+                        .box-p1 { fill: var(--box-p1); }
                         .box-p1 { fill: var(--box-p1); }
                         .box-p2 { fill: var(--box-p2); }
                         .text-initials { fill: var(--text-color); font-weight: bold; font-size: 14px; }
@@ -91,7 +93,13 @@ export const Grid: React.FC<GridProps> = ({ gameState, playerId, onEdgeClick }) 
                 {Array.from({ length: gridSize }).map((_, y) =>
                     Array.from({ length: gridSize - 1 }).map((_, x) => {
                         const taken = isEdgeTaken(x, y, x + 1, y);
+                        const edgeKey = `${x},${y}-${x + 1},${y}`;
+                        const isLastMove = gameState.lastMove === edgeKey || gameState.lastMove === `${x + 1},${y}-${x},${y}`;
                         const interactable = !taken && isMyTurn;
+                        const className = taken
+                            ? (isLastMove ? 'edge-taken edge-last-move' : 'edge-taken')
+                            : (interactable ? 'edge-free' : 'edge-disabled');
+
                         return (
                             <rect
                                 key={`h-${x}-${y}`}
@@ -99,7 +107,7 @@ export const Grid: React.FC<GridProps> = ({ gameState, playerId, onEdgeClick }) 
                                 y={padding + y * dotSpacing - 5}
                                 width={dotSpacing - dotRadius * 2}
                                 height={10}
-                                className={taken ? 'edge-taken' : (interactable ? 'edge-free' : 'edge-disabled')}
+                                className={className}
                                 onClick={() => handleEdgeClick(x, y, x + 1, y)}
                             />
                         );
@@ -110,7 +118,13 @@ export const Grid: React.FC<GridProps> = ({ gameState, playerId, onEdgeClick }) 
                 {Array.from({ length: gridSize }).map((_, x) =>
                     Array.from({ length: gridSize - 1 }).map((_, y) => {
                         const taken = isEdgeTaken(x, y, x, y + 1);
+                        const edgeKey = `${x},${y}-${x},${y + 1}`;
+                        const isLastMove = gameState.lastMove === edgeKey || gameState.lastMove === `${x},${y + 1}-${x},${y}`;
                         const interactable = !taken && isMyTurn;
+                        const className = taken
+                            ? (isLastMove ? 'edge-taken edge-last-move' : 'edge-taken')
+                            : (interactable ? 'edge-free' : 'edge-disabled');
+
                         return (
                             <rect
                                 key={`v-${x}-${y}`}
@@ -118,7 +132,7 @@ export const Grid: React.FC<GridProps> = ({ gameState, playerId, onEdgeClick }) 
                                 y={padding + y * dotSpacing + dotRadius}
                                 width={10}
                                 height={dotSpacing - dotRadius * 2}
-                                className={taken ? 'edge-taken' : (interactable ? 'edge-free' : 'edge-disabled')}
+                                className={className}
                                 onClick={() => handleEdgeClick(x, y, x, y + 1)}
                             />
                         );

@@ -3,6 +3,8 @@
   --text-color: #213547;
   --primary-color: #646cff;
   --primary-hover: #747bff;
+  --last-move-color: #ffd700;
+  /* Gold */
   --grid-dot: #000000;
   --grid-edge-taken: #333333;
   --grid-edge-hover: #dddddd;
@@ -22,6 +24,8 @@
     --grid-dot: #ffffff;
     --grid-edge-taken: #cccccc;
     --grid-edge-hover: #444444;
+    --last-move-color: #ffd700;
+    /* Gold */
     --box-p1: rgba(255, 80, 80, 0.5);
     --box-p2: rgba(80, 80, 255, 0.5);
     --header-bg: #333333;

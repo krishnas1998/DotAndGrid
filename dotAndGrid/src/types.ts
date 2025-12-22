@@ -23,6 +23,7 @@ export interface GameState {
     currentTurn: PlayerId;
     winner: PlayerId | null;
     status: 'waiting' | 'playing' | 'finished';
+    lastMove: string | null;
 }
 
 export interface MoveResult {
