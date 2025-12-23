@@ -35,23 +35,40 @@ export const Grid: React.FC<GridProps> = ({ gameState, playerId, onEdgeClick }) 
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', overflow: 'auto', padding: '20px' }}>
-            <svg width={width} height={height}>
+        <div style={{
+            width: '100%',
+            height: '100%',
+            overflow: 'auto',
+            padding: '10px', // Minimal padding
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-start', // Allows scrolling if larger than container
+            touchAction: 'manipulation',
+            position: 'relative'
+        }}>
+            <svg
+                width={width}
+                height={height}
+                style={{
+                    minWidth: width, // Ensure it doesn't shrink
+                    minHeight: height,
+                    margin: 'auto' // Center if smaller than container
+                }}
+            >
                 {/* Defs/Styles for SVG usage of CSS vars */}
                 <style>
                     {`
-                        .dot { fill: var(--grid-dot); }
+                        .dot { fill: var(--grid-dot); transition: fill 0.3s; }
                         .edge-taken { fill: var(--grid-edge-taken); }
-                        .edge-free { fill: transparent; transition: fill 0.2s; }
-                        .edge-free:hover { fill: var(--grid-edge-hover); cursor: pointer; }
+                        .edge-free { fill: transparent; transition: all 0.2s; }
+                        .edge-free:hover { fill: var(--grid-edge-hover); cursor: pointer; opacity: 0.6; }
                         .edge-disabled { fill: transparent; }
-                        .edge-last-move { fill: var(--last-move-color) !important; filter: drop-shadow(0 0 2px var(--last-move-color)); }
-                        .box-p1 { fill: var(--box-p1); }
-                        .box-p1 { fill: var(--box-p1); }
-                        .box-p2 { fill: var(--box-p2); }
-                        .text-initials { fill: var(--text-color); font-weight: bold; font-size: 14px; }
-                        .text-initials-p1 { fill: #ff4444; } /* Optional specific colors for text if needed, maintaining contrast */
-                        .text-initials-p2 { fill: #6666ff; }
+                        .edge-last-move { fill: var(--last-move-color) !important; filter: drop-shadow(0 0 4px var(--last-move-color)); }
+                        .box-p1 { fill: var(--box-p1); transition: fill 0.3s; }
+                        .box-p2 { fill: var(--box-p2); transition: fill 0.3s; }
+                        .text-initials { fill: var(--text-color); font-weight: 700; font-size: 16px; font-family: 'Outfit', sans-serif; pointer-events: none; }
+                        .text-initials-p1 { fill: var(--primary-color); }
+                        .text-initials-p2 { fill: var(--secondary-color); }
                     `}
                 </style>
 
@@ -64,21 +81,21 @@ export const Grid: React.FC<GridProps> = ({ gameState, playerId, onEdgeClick }) 
                             const initials = player?.initials || '?';
                             const isP1 = initials === 'P1';
                             return (
-                                <g key={`box-${x}-${y}`}>
+                                <g key={`box-${x}-${y}`} className="animate-pop">
                                     <rect
                                         x={padding + x * dotSpacing}
                                         y={padding + y * dotSpacing}
                                         width={dotSpacing}
                                         height={dotSpacing}
                                         className={isP1 ? 'box-p1' : 'box-p2'}
+                                        rx="4"
                                     />
                                     <text
                                         x={padding + x * dotSpacing + dotSpacing / 2}
                                         y={padding + y * dotSpacing + dotSpacing / 2}
                                         textAnchor="middle"
                                         dominantBaseline="middle"
-                                        className={isP1 ? 'text-initials-p1' : 'text-initials-p2'}
-                                        style={{ fontWeight: 'bold' }}
+                                        className={isP1 ? 'text-initials-p1 text-initials' : 'text-initials-p2 text-initials'}
                                     >
                                         {initials}
                                     </text>
@@ -104,9 +121,10 @@ export const Grid: React.FC<GridProps> = ({ gameState, playerId, onEdgeClick }) 
                             <rect
                                 key={`h-${x}-${y}`}
                                 x={padding + x * dotSpacing + dotRadius}
-                                y={padding + y * dotSpacing - 5}
+                                y={padding + y * dotSpacing - 6} // Slightly larger hit area
                                 width={dotSpacing - dotRadius * 2}
-                                height={10}
+                                height={12} // Larger hit area
+                                rx="4"
                                 className={className}
                                 onClick={() => handleEdgeClick(x, y, x + 1, y)}
                             />
@@ -128,10 +146,11 @@ export const Grid: React.FC<GridProps> = ({ gameState, playerId, onEdgeClick }) 
                         return (
                             <rect
                                 key={`v-${x}-${y}`}
-                                x={padding + x * dotSpacing - 5}
+                                x={padding + x * dotSpacing - 6} // Slightly larger hit area
                                 y={padding + y * dotSpacing + dotRadius}
-                                width={10}
+                                width={12} // Larger hit area
                                 height={dotSpacing - dotRadius * 2}
+                                rx="4"
                                 className={className}
                                 onClick={() => handleEdgeClick(x, y, x, y + 1)}
                             />
@@ -146,7 +165,7 @@ export const Grid: React.FC<GridProps> = ({ gameState, playerId, onEdgeClick }) 
                             key={`dot-${x}-${y}`}
                             cx={padding + x * dotSpacing}
                             cy={padding + y * dotSpacing}
-                            r={dotRadius}
+                            r={dotRadius + 1} // Slightly larger dots
                             className="dot"
                         />
                     ))

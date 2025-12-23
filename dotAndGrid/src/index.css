@@ -1,36 +1,59 @@
 :root {
-  --bg-color: #ffffff;
-  --text-color: #213547;
-  --primary-color: #646cff;
-  --primary-hover: #747bff;
+  /* Premium Palette */
+  --bg-color: #0f172a;
+  /* Slate 900 */
+  --text-color: #f8fafc;
+  /* Slate 50 */
+  --primary-color: #6366f1;
+  /* Indigo 500 */
+  --primary-hover: #818cf8;
+  /* Indigo 400 */
+  --secondary-color: #ec4899;
+  /* Pink 500 */
+
+  /* Game Colors */
+  --grid-dot: #94a3b8;
+  /* Slate 400 */
+  --grid-edge-taken: #cbd5e1;
+  /* Slate 300 */
+  --grid-edge-hover: #6366f1;
+  /* Indigo 500 */
+  --box-p1: rgba(99, 102, 241, 0.3);
+  /* Indigo with opacity */
+  --box-p2: rgba(236, 72, 153, 0.3);
+  /* Pink with opacity */
   --last-move-color: #ffd700;
   /* Gold */
-  --grid-dot: #000000;
-  --grid-edge-taken: #333333;
-  --grid-edge-hover: #dddddd;
-  --box-p1: rgba(255, 100, 100, 0.4);
-  --box-p2: rgba(100, 100, 255, 0.4);
-  --header-bg: #eeeeee;
-  --border-color: #cccccc;
-  --button-bg: #f9f9f9;
+
+  /* UI Elements */
+  --header-bg: #1e293b;
+  /* Slate 800 */
+  --card-bg: #1e293b;
+  /* Slate 800 */
+  --border-color: #334155;
+  /* Slate 700 */
+  --button-bg: #334155;
+  /* Slate 700 */
+  --shadow-color: rgba(0, 0, 0, 0.3);
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --bg-color: #242424;
-    --text-color: rgba(255, 255, 255, 0.87);
-    --primary-color: #646cff;
-    --primary-hover: #535bf2;
-    --grid-dot: #ffffff;
-    --grid-edge-taken: #cccccc;
-    --grid-edge-hover: #444444;
-    --last-move-color: #ffd700;
-    /* Gold */
-    --box-p1: rgba(255, 80, 80, 0.5);
-    --box-p2: rgba(80, 80, 255, 0.5);
-    --header-bg: #333333;
-    --border-color: #555555;
-    --button-bg: #1a1a1a;
+    --bg-color: #f8fafc;
+    /* Slate 50 */
+    --text-color: #0f172a;
+    /* Slate 900 */
+    --header-bg: #ffffff;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    /* Slate 200 */
+    --button-bg: #f1f5f9;
+    /* Slate 100 */
+    --grid-dot: #64748b;
+    /* Slate 500 */
+    --grid-edge-taken: #475569;
+    /* Slate 600 */
+    --shadow-color: rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -42,40 +65,51 @@ body {
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
   transition: background-color 0.3s, color 0.3s;
+  overflow: hidden;
+  /* Prevent body scroll, handle in app container */
 }
 
 #root {
   width: 100%;
-  max-width: 1280px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
   margin: 0 auto;
-  /* Removed top padding as requested */
-  padding: 0;
   text-align: center;
+  overflow: hidden;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
+  border-radius: 12px;
+  /* Softer corners */
+  border: 1px solid var(--border-color);
   padding: 0.6em 1.2em;
   font-size: 1em;
-  font-weight: 500;
+  font-weight: 600;
   font-family: inherit;
   background-color: var(--button-bg);
   color: var(--text-color);
   cursor: pointer;
-  transition: border-color 0.25s, background-color 0.3s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 button:hover {
   border-color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+button:active {
+  transform: translateY(0);
 }
 
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 /* Utilities */
@@ -85,30 +119,82 @@ button:focus-visible {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: fadeIn 0.3s ease;
 }
 
 .modal {
-  background: var(--bg-color);
-  padding: 20px;
-  border-radius: 12px;
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: 16px;
   max-width: 500px;
   width: 90%;
   border: 1px solid var(--border-color);
   text-align: left;
+  box-shadow: 0 20px 25px -5px var(--shadow-color);
+  animation: slideUp 0.3s ease;
 }
 
-.modal h2 {
-  margin-top: 0;
+/* Animations */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
 }
 
-.close-btn {
-  margin-top: 20px;
-  width: 100%;
-  background-color: var(--primary-color);
-  color: white;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
 }

@@ -19,9 +19,15 @@ export const ScoreBoard: React.FC<ScoreBoardProps> = ({ gameState, myId }) => {
     };
 
     return (
-        <div style={{ padding: '20px', textAlign: 'center' }}>
-            <h2 style={{ color: 'var(--text-color)' }}>{getStatusMessage()}</h2>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginTop: '10px' }}>
+        <div style={{ padding: '0 12px', textAlign: 'center' }}>
+            <h2 style={{
+                color: 'var(--text-color)',
+                margin: '8px 0', // Reduced margin
+                fontSize: '1rem', // Smaller text
+                fontWeight: 600,
+                opacity: 0.9
+            }}>{getStatusMessage()}</h2>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '4px' }}>
                 {players.map(p => {
                     const isMe = p.id === myId;
                     const score = scores[p.id] || 0;
@@ -29,23 +35,44 @@ export const ScoreBoard: React.FC<ScoreBoardProps> = ({ gameState, myId }) => {
                     const initials = p.initials;
 
                     // Determine border/text color based on player
-                    const colorVar = initials === 'P1' ? 'var(--box-p1)' : 'var(--box-p2)';
-                    const borderColor = initials === 'P1' ? '#ff4444' : '#6666ff'; // Stronger color for border
+                    const colorVar = initials === 'P1' ? 'var(--primary-color)' : 'var(--secondary-color)';
 
                     return (
                         <div key={p.id} style={{
-                            padding: '15px 25px',
-                            border: `2px solid ${borderColor}`,
-                            borderRadius: '8px',
-                            fontWeight: isTurn ? 'bold' : 'normal',
-                            backgroundColor: isTurn ? 'var(--header-bg)' : 'transparent',
-                            boxShadow: isTurn ? `0 0 10px ${colorVar}` : 'none',
-                            transition: 'all 0.3s ease'
+                            padding: '8px 16px', // Compact padding
+                            border: `2px solid ${isTurn ? colorVar : 'var(--border-color)'}`,
+                            borderRadius: '10px',
+                            backgroundColor: 'var(--card-bg)',
+                            position: 'relative',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            transform: isTurn ? 'scale(1.02)' : 'scale(1)', // Subtle scale
+                            boxShadow: isTurn ? `0 0 10px -3px ${colorVar}` : 'none', // Subtler shadow
+                            minWidth: '90px' // Smaller min-width
                         }}>
-                            <div style={{ fontSize: '1rem', color: 'var(--text-color)' }}>
-                                {isMe ? 'You' : 'Opponent'} ({p.initials})
+                            {isTurn && (
+                                <div style={{
+                                    position: 'absolute',
+                                    top: 0, left: 0, right: 0, bottom: 0,
+                                    borderRadius: '8px',
+                                    animation: 'pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                                }} />
+                            )}
+                            <div style={{
+                                fontSize: '0.75rem',
+                                color: isTurn ? colorVar : 'var(--text-color)',
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                            }}>
+                                {isMe ? 'You' : 'Opponent'}
                             </div>
-                            <div style={{ fontSize: '2rem', marginTop: '5px' }}>{score}</div>
+                            <div style={{
+                                fontSize: '1.5rem', // Smaller score font
+                                marginTop: '2px', // Tighter spacing
+                                lineHeight: 1,
+                                fontWeight: 700,
+                                color: 'var(--text-color)'
+                            }}>{score}</div>
                         </div>
                     );
                 })}
@@ -53,7 +80,15 @@ export const ScoreBoard: React.FC<ScoreBoardProps> = ({ gameState, myId }) => {
             {status === 'finished' && (
                 <button
                     onClick={() => window.location.reload()}
-                    style={{ marginTop: '20px', padding: '10px 20px', cursor: 'pointer' }}
+                    style={{
+                        marginTop: '12px',
+                        padding: '8px 24px',
+                        fontSize: '0.9rem',
+                        backgroundColor: 'var(--primary-color)',
+                        color: 'white',
+                        border: 'none',
+                        boxShadow: '0 4px 6px -1px rgba(99, 102, 241, 0.4)'
+                    }}
                 >
                     Play Again
                 </button>

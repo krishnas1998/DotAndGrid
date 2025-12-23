@@ -68,36 +68,114 @@ export const GameRoom: React.FC = () => {
     const myId = socket?.id || '';
 
     return (
-        <div style={{ paddingBottom: '20px' }}>
-            <div style={{
+        <div style={{
+            height: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden'
+        }}>
+            {/* Header */}
+            <header style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                padding: '10px 20px',
+                padding: '8px 16px', // Reduced padding
                 backgroundColor: 'var(--header-bg)',
-                borderBottom: '1px solid var(--border-color)'
+                borderBottom: '1px solid var(--border-color)',
+                boxShadow: '0 2px 4px -1px var(--shadow-color)', // Subtler shadow
+                zIndex: 10,
+                height: '48px' // Fixed condensed height
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <div style={{ fontSize: '1.2rem' }}>Room: <strong>{roomId}</strong></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                        fontSize: '1rem',
+                        fontWeight: 600,
+                        color: 'var(--text-color)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }}>
+                        <span style={{ opacity: 0.7 }}>Room</span>
+                        <span style={{
+                            backgroundColor: 'var(--primary-color)',
+                            padding: '2px 8px',
+                            borderRadius: '6px',
+                            color: 'white',
+                            fontSize: '0.9rem',
+                            fontWeight: 700,
+                            letterSpacing: '0.5px'
+                        }}>{roomId}</span>
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    {/* Compact Action Buttons */}
                     <button
                         onClick={handleShare}
-                        style={{ padding: '5px 10px', fontSize: '0.9rem' }}
+                        style={{
+                            padding: '6px',
+                            fontSize: '1.2rem',
+                            lineHeight: 1,
+                            backgroundColor: 'transparent',
+                            border: 'none',
+                            boxShadow: 'none',
+                            cursor: 'pointer'
+                        }}
                         title="Share Room Link"
                     >
-                        Share Room 🔗
+                        🔗
                     </button>
                     <button
                         onClick={() => setShowInstructions(true)}
-                        style={{ padding: '5px 10px', fontSize: '0.9rem', backgroundColor: 'transparent', border: '1px solid var(--border-color)' }}
+                        style={{
+                            padding: '6px 12px',
+                            fontSize: '0.85rem',
+                            backgroundColor: 'transparent',
+                            border: '1px solid var(--border-color)',
+                            borderRadius: '20px',
+                            height: '32px'
+                        }}
                     >
-                        How to Play
+                        Help
+                    </button>
+                    <button
+                        onClick={() => navigate('/')}
+                        style={{
+                            fontSize: '0.85rem',
+                            backgroundColor: 'transparent',
+                            color: 'var(--secondary-color)',
+                            border: 'none',
+                            padding: '6px 12px',
+                            boxShadow: 'none'
+                        }}
+                    >
+                        Exit
                     </button>
                 </div>
-                <button onClick={() => { navigate('/'); }} style={{ cursor: 'pointer', fontSize: '0.9rem' }}>Leave</button>
-            </div>
+            </header>
 
-            <ScoreBoard gameState={gameState} myId={myId} />
-            <Grid gameState={gameState} playerId={myId} onEdgeClick={handleEdgeClick} />
+            {/* Main Content Area */}
+            <main style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+                position: 'relative'
+            }}>
+                <ScoreBoard gameState={gameState} myId={myId} />
+
+                <div style={{
+                    flex: 1,
+                    overflow: 'hidden',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start',
+                    padding: '20px',
+                    position: 'relative'
+                }}>
+                    <Grid gameState={gameState} playerId={myId} onEdgeClick={handleEdgeClick} />
+                </div>
+            </main>
 
             {showInstructions && <InstructionsModal onClose={() => setShowInstructions(false)} />}
         </div>
